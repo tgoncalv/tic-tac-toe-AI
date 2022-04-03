@@ -145,7 +145,7 @@ class Interface(tk.Tk):
         self.update()
 
     def choixBlanc(self):
-        self.morpion.joueur='rond'
+        self.morpion.joueur='circl'
         self.morpion.reset()
         self.buttonNoir.config(state='disabled')
         self.buttonBlanc.config(state='disabled')
@@ -178,7 +178,7 @@ class Interface(tk.Tk):
                 self.choixMode = 'HVSAI'
                 self.choixIA()
         else:
-            self.zoneTexte.config(text="You are against the AI ! Align 3 " + self.morpion.joueur + " to win!", background='cyan')
+            self.zoneTexte.config(text="You're fighting against the AI ! Align 3 " + self.morpion.joueur + "es to win!", background='cyan')
             self.morpion.is_active = True
             self.morpion.HumanVSAI()
         
@@ -241,10 +241,10 @@ class Interface(tk.Tk):
                 self.HumanVSAI()
 
     def tracer(self, forme, case, color):
-        # Trace la forme dans la case, rond ou cross
+        # Trace la forme dans la case, circl ou cross
         try:
             assert self.morpion.is_active, "Choose a form to play"
-            if forme == 'rond':
+            if forme == 'circl':
                 self.canvas.create_oval(*(self.liste_cases[case]), outline=color)
             else:
                 self.canvas.create_line(*(self.liste_cases[case]), fill=color)
@@ -285,8 +285,8 @@ class Morpion():
     def __init__(self,interface):
         self.interface = interface
         self.winPossibilities = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]] # Liste de toutes les combinaisons permettant de gagner
-        self.joueurs = ['rond','cross']
-        self.joueur = '' # 'rond' ou 'cross'
+        self.joueurs = ['circl','cross']
+        self.joueur = '' # 'circl' ou 'cross'
         self.AI = None
         self.is_active = False
         self.profondeur = 6
@@ -294,7 +294,7 @@ class Morpion():
         
     def reset(self):
         """Permet de réinitialiser les variables avant de débuter une nouvelle partie"""
-        self.Vo = [] # Vecteur des ronds
+        self.Vo = [] # Vecteur des circls
         self.Vx = [] # Vecteur des cross
         self.VV = [i for i in range(9)] # Vecteur des cases vides
         self.case_a_vider = None
@@ -303,7 +303,7 @@ class Morpion():
         if self.joueur_start == 1:
             self.tile = self.joueur # self.tile correspond au pion qui doit être joué au prochain tour
         else:
-            self.tile = 'cross' if self.joueur == 'rond' else 'rond'
+            self.tile = 'cross' if self.joueur == 'circl' else 'circl'
         self.compteur = 0
         self.case = None
         self.vainqueur = None
@@ -323,7 +323,7 @@ class Morpion():
         self.AI = 'minMax'
         
     def playerTile(self,tile):
-        """Permet de choisir si on joue en tant que rond ou cross"""
+        """Permet de choisir si on joue en tant que circl ou cross"""
         if tile in self.joueurs:
             self.joueur = tile
             
@@ -349,7 +349,7 @@ class Morpion():
             
     def updateHistorique(self):
         """Actualise l'historique"""
-        if self.tile == 'rond':
+        if self.tile == 'circl':
             self.Vo.sort()
             self.historique.append(self.Vo.copy()) # mémorise la liste qui vient d'être modifiée
         else:
@@ -366,17 +366,17 @@ class Morpion():
                 if self.case != None:
                     # place_tile() permute la valeur de self.tile
                     # Mais si la case n'a pas été jouée (i.e. self.case != None), alors il faut repermuter self.tile
-                    self.tile = 'rond' if self.tile == 'cross' else 'cross'
+                    self.tile = 'circl' if self.tile == 'cross' else 'cross'
             elif self.case in self.VV:
                 # Si self.case_a_vider != None, alors il faut supprimer le pion de cette case pour la replacer dans self.case, en vérifiant que self.case soit libre
                 self.remove_tile() # Supprime le pion dans self.case_a_vider
                 self.place_tile() # Rajoute un pion dans self.case, ou sélectionne une nouvelle valeur pour self.case_a_vider
                 if self.case_a_vider != None:
                     # Si une nouvelle case_a_vider a été sélectionné, il faut permuter la valeur de self.tile
-                    self.tile = 'rond' if self.tile == 'cross' else 'cross'
+                    self.tile = 'circl' if self.tile == 'cross' else 'cross'
             elif self.case == self.case_a_vider: # Permet de déselectionner la case à vider en recliquant dessus
                 self.interface.tracer(self.tile, self.case_a_vider, 'black')
-                if self.tile == 'rond' and self.case in self.Vo or self.tile == "cross" and self.case in self.Vx:
+                if self.tile == 'circl' and self.case in self.Vo or self.tile == "cross" and self.case in self.Vx:
                     self.case_a_vider = None
                     
             if self.playMode == "HVSAI" and self.case == None and self.vainqueur == None: # La machine joue si le joueur humain a placé/déplacé un pion
@@ -401,7 +401,7 @@ class Morpion():
         # Permute la valeur de self.tile pour que le prochain tour corresponde à celui de l'adversaire
         if self.winner():
             self.interface.editGagnant()
-        self.tile = 'rond' if self.tile == 'cross' else 'cross' # Change la cross en rond et vice-versa
+        self.tile = 'circl' if self.tile == 'cross' else 'cross' # Change la cross en circl et vice-versa
             
     def remove_tile(self):
         """Supprime le pion présent dans self.case_a_vider"""
@@ -414,7 +414,7 @@ class Morpion():
       
     def human_place_tile(self):
         """Appelé lorsqu'un humain veut placer un pion"""
-        if self.tile == 'rond': # Sélectionne la couleur du pion à jouer
+        if self.tile == 'circl': # Sélectionne la couleur du pion à jouer
             if len(self.Vo)>2:
                 # Cas où on selectionne un pion à déplacer (si on a 3 pions placés)
                 if self.case in self.Vo:
@@ -464,9 +464,9 @@ class Morpion():
         case = self.VV[0] # Case choisit par défaut
         g = self.calculate_singleG(case)
         
-        if self.tile == 'rond' and len(self.Vo)>2 or self.tile == 'cross' and len(self.Vx)>2:
+        if self.tile == 'circl' and len(self.Vo)>2 or self.tile == 'cross' and len(self.Vx)>2:
             for i in range(3): # On essaye de voir quel pion parmi les 3 déjà posés il est judicieux de déplacer
-                if self.tile == 'rond':
+                if self.tile == 'circl':
                     self.Vo.sort() # Ordonne la liste pour éviter de changer l'indice des elements de la liste
                     self.case_a_vider = self.Vo[i]
                     self.Vo.remove(self.case_a_vider) # Simule la suppression d'un des pions déjà placés
@@ -477,7 +477,7 @@ class Morpion():
                 
                 g,case = self.bestFirst_calculateG(g,case) # Calcule la meilleur case à jouer
                 
-                if self.tile == 'rond':
+                if self.tile == 'circl':
                     self.Vo.append(self.case_a_vider) # Remet en place le pion dont ça suppression avait été simulée (sera réellement supprimée une fois qu'on est sûr de sa suppression)
                 else:
                     self.Vx.append(self.case_a_vider) # Remet en place le pion dont ça suppression avait été simulée (sera réellement supprimée une fois qu'on est sûr de sa suppression)
@@ -488,7 +488,7 @@ class Morpion():
             g,case = self.bestFirst_calculateG(g,case) # On a pas de pion a supprimer car il y a moins de 3 pions dans le plateau
             
         self.VV.remove(case) # Rend la case choisie occupée
-        if self.tile == 'rond':
+        if self.tile == 'circl':
             self.Vo.append(case)
         else:
             self.Vx.append(case)
@@ -496,14 +496,14 @@ class Morpion():
         
     def calculate_singleG(self,caseLibre):
         """Calcule la valeur de g correspondant à la case libre"""
-        if self.tile == 'rond':
+        if self.tile == 'circl':
             self.Vo.append(caseLibre)
         else:
             self.Vx.append(caseLibre)
 
         NL1,NL2,NC1,NC2,ND11,ND12,ND21,ND22 = 0,0,0,0,0,0,0,0
         case_x,case_y = caseLibre//3, caseLibre%3 # Numéro de la ligne et de la colonne de la case libre
-        # On part du principe que self.tile == 'rond'. Si ce n'est pas le cas, on intervertit NL1 et NL2, NC1 et NC2, ND1 et ND2
+        # On part du principe que self.tile == 'circl'. Si ce n'est pas le cas, on intervertit NL1 et NL2, NC1 et NC2, ND1 et ND2
         for i in self.Vo:
             i_x,i_y = i//3, i%3 # Numéro de la ligne et de la colonne du pion
             if i_x == case_x:
@@ -525,13 +525,13 @@ class Morpion():
             if j in [2,4,6] and caseLibre in [2,4,6]:
                 ND22 += 1 # La case libre possède un pion ennemi dans sa deuxième diagonale
         
-        if self.tile == 'rond':
+        if self.tile == 'circl':
             self.Vo.remove(caseLibre)
         else:
             self.Vx.remove(caseLibre)
             
-        if not self.tile == 'rond':
-            # On intervertit les indices, parce qu'on était partit du principe que les pions alliés étaient les ronds       
+        if not self.tile == 'circl':
+            # On intervertit les indices, parce qu'on était partit du principe que les pions alliés étaient les circls       
             NL1,NL2 = NL2,NL1
             NC1,NC2 = NC2,NC1
             ND11,ND12 = ND12,ND11
@@ -581,18 +581,18 @@ class Morpion():
         if self.profondeur == 0 or self.profondeur > 6: # Problème de profondeur, on arrête donc l'utilisation de minMax
             print("Problème de profondeur lors du choix de l'utilisation de l'algorithme minMax")
             return
-        plateau = {"cross":self.Vx,"rond":self.Vo,"vide":self.VV} # Regrouppement des 3 listes en un dictionnaire
+        plateau = {"cross":self.Vx,"circl":self.Vo,"vide":self.VV} # Regrouppement des 3 listes en un dictionnaire
         plateauAJouer, valeur = self.executeMinMax(plateau, self.profondeur, "max", self.tile) # Appel récursif pour étudier la meilleur case à jouer en profondeur
         
         # Remplace les anciennes listes Vx,Vo,VV par celles renvoyées par l'algotithme minMax
         self.Vx = plateauAJouer['cross']
-        self.Vo = plateauAJouer['rond']
+        self.Vo = plateauAJouer['circl']
         self.VV = plateauAJouer['vide']
         self.repaint()
         
     def executeMinMax(self, plateau, profondeur, mode, color):
         """Partie récursive de l'algorithme minMax"""
-        inverseColor = 'rond' if color == 'cross' else 'cross'        
+        inverseColor = 'circl' if color == 'cross' else 'cross'        
         inverseMode = 'max' if mode == 'min' else 'min'
         if len(plateau["vide"]) < 8: #Si le plateau n'est pas vierge:
             if profondeur == 0 or self.gagne(inverseColor, plateau):
@@ -642,7 +642,7 @@ class Morpion():
         
     def score_plateau(self, plateau,color):
         """Calcule le score d'un plateau dont la couleur qui vient d'être jouée correspond à color"""
-        inverseColor = 'rond' if color == 'cross' else 'cross'
+        inverseColor = 'circl' if color == 'cross' else 'cross'
         if self.gagne(color, plateau):
             return math.inf
         elif self.gagne(inverseColor, plateau):
@@ -692,7 +692,7 @@ class Morpion():
         liste = []
         Vx,Vo,VV = plateau.values()
         for caseVide in plateau["vide"]:
-            newPlateau = {"cross":Vx.copy(),"rond":Vo.copy(),"vide":VV.copy()}
+            newPlateau = {"cross":Vx.copy(),"circl":Vo.copy(),"vide":VV.copy()}
             newPlateau[color].append(caseVide)
             newPlateau["vide"].remove(caseVide)
             liste.append(newPlateau)
@@ -705,19 +705,19 @@ class Morpion():
         for caseOccup_indice in range(3): # Essaie de déplacer tous pions
             plateau[color].sort() # Ordonne la liste pour ne pas modifier l'indice des éléments
             caseOccup = plateau[color][caseOccup_indice]
-            if color == 'rond':
+            if color == 'circl':
                 Vo.remove(caseOccup)
             else:
                 Vx.remove(caseOccup)
             VV.append(caseOccup)
             for caseVide in plateau["vide"]:
                 if caseVide != caseOccup: # Vérifie qu'on ne crée pas le même plateau que celui de base
-                    newPlateau = {"cross":Vx.copy(),"rond":Vo.copy(),"vide":VV.copy()}
+                    newPlateau = {"cross":Vx.copy(),"circl":Vo.copy(),"vide":VV.copy()}
                     newPlateau[color].append(caseVide)
                     newPlateau["vide"].remove(caseVide)
                     liste.append(newPlateau)
             VV.remove(caseOccup)
-            if color == 'rond':
+            if color == 'circl':
                 Vo.append(caseOccup)
             else:
                 Vx.append(caseOccup)
@@ -730,13 +730,13 @@ class Morpion():
             if case in self.Vx:
                 self.interface.tracer('cross', case, 'black')
             elif case in self.Vo:
-                self.interface.tracer('rond', case, 'black')
+                self.interface.tracer('circl', case, 'black')
             
     def winner(self):
         """Vérifie s'il y a un gagnant dans la configuration actuelle des listes"""
         self.Vo.sort() # Ordonne la liste pour la comparer avec les listes contenues dans self.winPossibilities
         if self.Vo in self.winPossibilities:
-            self.vainqueur = "rond"
+            self.vainqueur = "circl"
             return True
         self.Vx.sort()
         if self.Vx in self.winPossibilities: # Ordonne la liste pour la comparer avec les listes contenues dans self.winPossibilities
@@ -757,13 +757,13 @@ class Morpion():
         return False
     
     def endGame(self):
-        plateau = {"cross":self.Vx,"rond":self.Vo,"vide":self.VV} # Regrouppement des 3 listes en un dictionnaire
+        plateau = {"cross":self.Vx,"circl":self.Vo,"vide":self.VV} # Regrouppement des 3 listes en un dictionnaire
         pointscross = 8-self.gagnantsPossibles(plateau,"cross") # Il y a 8 façons de gagner moins les lignes/colonnes/diagonales bloquées par l'ennemi
-        pointsRond = 8-self.gagnantsPossibles(plateau,"rond")
-        if pointscross > pointsRond:
-            self.vainqueur = "circle ("+str(pointscross)+" points vs "+str(pointsRond)+" points)."
+        pointscircl = 8-self.gagnantsPossibles(plateau,"circl")
+        if pointscross > pointscircl:
+            self.vainqueur = "circl ("+str(pointscross)+" points vs "+str(pointscircl)+" points)."
         else:
-            self.vainqueur = "cross ("+str(pointsRond)+" points vs "+str(pointscross)+" points)."
+            self.vainqueur = "cross ("+str(pointscircl)+" points vs "+str(pointscross)+" points)."
         
 if __name__ == "__main__" :
     jeu = Interface()
